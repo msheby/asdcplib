@@ -1302,38 +1302,6 @@ ASDCP::MXF::OPAtomIndexFooter::ContainerDuration() const
 }
 
 //
-ui32_t
-ASDCP::MXF::OPAtomIndexFooter::GetLargestElementSize() const
-{
-  ui32_t largest_size = 0;
-  std::list<InterchangeObject*>::iterator li;
-
-  for ( li = m_PacketList->m_List.begin(); li != m_PacketList->m_List.end(); li++ )
-    {
-      IndexTableSegment *segment = dynamic_cast<IndexTableSegment*>(*li);
-
-      if ( segment != 0 )
-        {
-          for ( ui32_t i = 0; i < segment->DeltaEntryArray.size(); i++ )
-            {
-              ui32_t element_size = segment->DeltaEntryArray[i].ElementData;
-              if ( element_size > largest_size )
-                {
-                  largest_size = element_size;
-                }
-            }
-        }
-    }
-
-  if ( m_DefaultDeltaEntry.ElementData > largest_size )
-    {
-      largest_size = m_DefaultDeltaEntry.ElementData;
-    }
-
-  return largest_size;
-}
-
-//
 ASDCP::Result_t
 ASDCP::MXF::OPAtomIndexFooter::Lookup(ui32_t frame_num, IndexTableSegment::IndexEntry& Entry) const
 {
