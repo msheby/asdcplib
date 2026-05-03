@@ -147,6 +147,7 @@ ASDCP::h__ASDCPReader::OpenMXFRead(const std::string& filename)
 
       if ( ASDCP_SUCCESS(result) )
 	{
+	  m_IndexAccess.m_ECOffset = m_HeaderPart.BodyOffset;
 	  m_IndexAccess.m_Lookup = &m_HeaderPart.m_Primer;
       result = m_IndexAccess.InitFromFile(*m_File);
 	}

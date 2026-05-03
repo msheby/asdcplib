@@ -468,6 +468,7 @@ namespace ASDCP
 	  virtual Result_t GetMDObjectsByType(const byte_t* ObjectID, std::list<InterchangeObject*>& ObjectList);
 
           virtual ui64_t   ContainerDuration() const;
+	  virtual ui64_t   GetLargestElementSize() const;
 	  virtual Result_t Lookup(ui32_t frame_num, IndexTableSegment::IndexEntry&) const;
 	  virtual void     PushIndexEntry(const IndexTableSegment::IndexEntry&);
 	  virtual void     SetDeltaParams(const IndexTableSegment::DeltaEntry&);

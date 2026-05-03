@@ -1302,6 +1302,54 @@ ASDCP::MXF::OPAtomIndexFooter::ContainerDuration() const
 }
 
 //
+ui64_t
+ASDCP::MXF::OPAtomIndexFooter::GetLargestElementSize() const
+{
+  ui64_t last_offset = 0, largest_size = 0;
+  bool have_prev = false;
+  std::list<InterchangeObject*>::iterator li;
+
+  for ( li = m_PacketList->m_List.begin(); li != m_PacketList->m_List.end(); li++ )
+    {
+      IndexTableSegment *segment = dynamic_cast<IndexTableSegment*>(*li);
+
+      if ( segment == 0 )
+        continue;
+
+      if ( segment->EditUnitByteCount > 0 )
+        return segment->EditUnitByteCount;
+
+      for ( ui32_t i = 0; i < segment->IndexEntryArray.size(); ++i )
+        {
+          ui64_t offset = segment->IndexEntryArray[i].StreamOffset;
+
+          if ( have_prev )
+            {
+              ui64_t this_size = offset - last_offset;
+              if ( this_size > largest_size )
+                largest_size = this_size;
+            }
+
+          last_offset = offset;
+          have_prev = true;
+        }
+    }
+
+  if ( have_prev && m_ECOffset > 0 && (ui64_t)m_ECOffset < ThisPartition )
+    {
+      ui64_t essence_extent = ThisPartition - m_ECOffset;
+      if ( essence_extent > last_offset )
+        {
+          ui64_t last_element_size = essence_extent - last_offset;
+          if ( last_element_size > largest_size )
+            largest_size = last_element_size;
+        }
+    }
+
+  return largest_size;
+}
+
+//
 ASDCP::Result_t
 ASDCP::MXF::OPAtomIndexFooter::Lookup(ui32_t frame_num, IndexTableSegment::IndexEntry& Entry) const
 {
